@@ -6,7 +6,7 @@ public class Pawn extends Figure {
     Pawn(boolean s,boolean sp) {
         side = s;
         startPosition = sp;
-
+        FigureType = 'p';
         if (s) {
             InputStream imageStream = Main.class.getResourceAsStream("/chess_f/pion_w.png");
             if (imageStream == null) {
@@ -31,13 +31,7 @@ public class Pawn extends Figure {
             }
         }
 
-
-        if (!startPosition) {
-            range = -1;
-        }
-        else
-            range = 1;
-
-
     }
+
+
 }

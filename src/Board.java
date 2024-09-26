@@ -2,12 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Point;
 
 public class Board extends JPanel {
     private final Figure[][] board;
     private final int pixelSize = 100;
     private boolean firstTurn=true;
-
+    private boolean pick = false;
+    private Point coordinates;
     public Board(boolean side_choose) {
         int size = 800 / pixelSize;
         board = new Figure[size][size];
@@ -18,7 +20,18 @@ public class Board extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                pick_figure(e.getX()/pixelSize,e.getY()/pixelSize);
+                if(!pick)
+                {
+                    System.out.println("wybrano figure");
+                    coordinates = pick_figure(e.getX() / pixelSize, e.getY() / pixelSize);
+                }
+                else
+                {
+                    System.out.println("wybrana figura: " + coordinates.x + " / " + coordinates.y);
+                    System.out.println("ruch ale nie wiadomo czy dobry");
+                    move(coordinates.x,coordinates.y,e.getX() / pixelSize, e.getY() / pixelSize);
+
+                }
 
                 repaint();
             }
@@ -65,22 +78,54 @@ public class Board extends JPanel {
         }
     }
 
-    public void pick_figure(int posx, int posy)
+    public Point pick_figure(int posx, int posy)
     {
 
         if(board[posx][posy]!=null&&firstTurn == board[posx][posy].side)
         {
-                System.out.println("wybrano figure, rane: " + board[posx][posy].range);
                 firstTurn=!firstTurn;
+                pick=!pick;
+                return new Point(posx,posy);
+
         }
         else
         {
+            System.out.println("błąd wyboru figury");
+            return new Point(-1,-1);
+        }
+    }
 
-                System.out.println("Błąd!!!");
+    public void move(int posx, int posy, int nposx, int nposy)
+    {
+        if(range( posx, posy, nposx, nposy)) {
+            System.out.println("udany ruch");
+            board[nposx][nposy] = board[posx][posy];
+            board[posx][posy]=null;
+            pick = !pick;
+        }
+        else {
+            System.out.println("zly ruch");
         }
 
+    }
 
-
+    public boolean range(int x,int y, int nx, int ny)
+    {
+        //if(board[x][y].FigureType=='p') {
+            if (board[x][y].startPosition) {
+                if (y - ny == -1 && x==nx) {
+                    return true;
+                } else {
+                    return false;
+                }
+                //-1
+            } else {
+                if (y - ny == 1&& x==nx) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
 
     }
 }
