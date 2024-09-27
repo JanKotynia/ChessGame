@@ -10,7 +10,6 @@ public class Board extends JPanel {
     private boolean firstTurn = true;
     private boolean pick = false;
     private Point coordinates;
-    private boolean confirmedMove = false;
     //private boolean castling = false;
 
     public Board(boolean side_choose) {
@@ -63,12 +62,13 @@ public class Board extends JPanel {
             firstTurn = !firstTurn;
         } else if(board[nposx][nposy] != null && board[nposx][nposy].side==board[posx][posy].side)
         {
-            System.out.println("anulowano wybór figury wybierz kolejna");
+            System.out.println("wybierano kolejna figure");
             coordinates = pick_figure(nposx, nposy);
+            pick=true;
         }
-        else {
+        else
             System.out.println("zly ruch");
-        }
+
 
     }
 
@@ -92,8 +92,7 @@ public class Board extends JPanel {
     {
         if (board[x][y].startPosition) {
             if (y - ny == -1 && x == nx) {
-                if(board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side) )
-                    return true;
+                return board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side);
             } else {
                 return false;
             }
@@ -103,8 +102,7 @@ public class Board extends JPanel {
         {
             if (y - ny == 1 && x == nx) {
                 {
-                    if(board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side) )
-                        return true;
+                    return board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side);
                 }
             }
             else
@@ -112,7 +110,6 @@ public class Board extends JPanel {
                 return false;
             }
         }
-        return false;
     }
 
 
@@ -144,8 +141,7 @@ public class Board extends JPanel {
                     return false;
 
             }
-            if(board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side)) )
-            {    return true; }
+            return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
         }
         return false;
     }
@@ -179,10 +175,7 @@ public class Board extends JPanel {
                 Tempx+=step;
                 Tempy+=step2;
             }
-            if((board[nx][ny] == null || (board[nx][ny].side != board[x][y].side)) )
-               return true;
-            else
-                return false;
+        return board[nx][ny] == null || (board[nx][ny].side != board[x][y].side);
 
     }
 
