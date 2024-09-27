@@ -36,8 +36,6 @@ import java.awt.event.MouseEvent;
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-
-
             g.setColor(new Color(0, 0, 0));
             board[1][0]=true;
             board[1][1]=true;
