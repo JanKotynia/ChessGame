@@ -96,16 +96,23 @@ public class Board extends JPanel {
         board[2][7]= bb;
         board[5][7]= bb;
 
+        Queen q = new Queen(!side_choose);
+        Queen bq = new Queen(side_choose);
+
         King k = new King(!side_choose);
         King bk = new King(side_choose);
         if(!side_choose){
             board[4][0] = k;
             board[3][7] = bk;
+            board[3][0]=q;
+            board[4][7]=bq;
         }
         else
         {
             board[3][0] = k;
             board[4][7] = bk;
+            board[4][0] = q;
+            board[3][7] = bq;
         }
     }
 
@@ -136,50 +143,19 @@ public class Board extends JPanel {
 
     public boolean range(int x, int y, int nx, int ny) {
 
-        switch (board[x][y].FigureType) {
-
-            case 'p': {
-                return pawnRange(x,y,nx,ny);
-            }
-                case 't': {
-                    return towerRange(x,y,nx,ny);
-                }
-                    case 'h' : {
-                        return horseRange(x,y,nx,ny);
-                    }
-                        case 'k' : {
-                            return kingRange(x,y,nx,ny);
-                        }
-                            case 'b' : {
-                                return false;
-                                //return bishopRange(x,y,nx,ny);
-                            }
-                default:
-                    return false;
-        }
+        return switch (board[x][y].FigureType) {
+            case 'p' -> pawnRange(x, y, nx, ny);
+            case 't' -> towerRange(x, y, nx, ny);
+            case 'h' -> horseRange(x, y, nx, ny);
+            case 'b' -> bishopRange(x, y, nx, ny);
+            case 'q' -> queenRange(x, y, nx, ny);
+            case 'k' -> kingRange(x, y, nx, ny);
+            default -> false;
+        };
     }
 
 
 
-    public boolean bishopRange(int x, int y, int nx, int ny)
-{
-    int step=1;
-    int step2=-1;
-    if(Math.abs(nx - x) == Math.abs(ny - y))
-    {
-        for (int i = x;i<nx;i+=step)
-        {
-            for (int j = y;j<ny;j+=step)
-            {
-                if(board[i][j]!=null && board[i][j].side == board[x][y].side)
-                    return false;
-            }
-        }
-        return true;
-    }
-    else
-        return false;
-}
 
     public boolean pawnRange(int x, int y, int nx, int ny)
     {
@@ -208,14 +184,6 @@ public class Board extends JPanel {
         return false;
     }
 
-    public boolean kingRange(int x, int y, int nx, int ny)
-    {
-        if (Math.abs(x - nx) <= 1 && Math.abs(y - ny) <= 1){
-            return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
-        }
-        else
-            return false;
-    }
 
     public boolean towerRange(int x, int y, int nx, int ny)
     {
@@ -254,6 +222,47 @@ public class Board extends JPanel {
     public boolean horseRange(int x, int y, int nx, int ny)
     {
         if ((Math.abs(x - nx) == 2 && Math.abs(y - ny) == 1) || (Math.abs(x - nx) == 1 && Math.abs(y - ny) == 2)){
+            return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
+        }
+        else
+            return false;
+    }
+
+    public boolean bishopRange(int x, int y, int nx, int ny)
+    {
+        if(Math.abs(nx - x) != Math.abs(ny - y))
+        {
+           return false;
+        }
+
+            int step2 = (ny>y) ? 1 : -1;
+            int step = (nx>x) ? 1 : -1;
+
+            int Tempx=x+step;
+            int Tempy=y+step2;
+            while (Tempx!=nx && Tempy!=ny)
+            {
+
+                if(board[Tempx][Tempy]!=null)
+                    return false;
+                Tempx+=step;
+                Tempy+=step2;
+            }
+            if((board[nx][ny] == null || (board[nx][ny].side != board[x][y].side)) )
+               return true;
+            else
+                return false;
+
+    }
+
+    public boolean queenRange(int x, int y, int nx, int ny)
+    {
+        return (towerRange(x,y,nx,ny) || bishopRange(x,y,nx,ny));
+    }
+
+    public boolean kingRange(int x, int y, int nx, int ny)
+    {
+        if (Math.abs(x - nx) <= 1 && Math.abs(y - ny) <= 1){
             return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
         }
         else
