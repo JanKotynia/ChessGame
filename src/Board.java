@@ -10,6 +10,8 @@ public class Board extends JPanel {
     private boolean firstTurn = true;
     private boolean pick = false;
     private Point coordinates;
+    private boolean confirmedMove = false;
+    //private boolean castling = false;
 
     public Board(boolean side_choose) {
         int size = 800 / pixelSize;
@@ -25,7 +27,6 @@ public class Board extends JPanel {
                     System.out.println("wybrano figure");
                     coordinates = pick_figure(e.getX() / pixelSize, e.getY() / pixelSize);
                 } else {
-                    System.out.println("wybrana figura: " + coordinates.x + " / " + coordinates.y);
                     System.out.println("ruch ale nie wiadomo czy dobry");
                     move(coordinates.x, coordinates.y, e.getX() / pixelSize, e.getY() / pixelSize);
 
@@ -40,90 +41,14 @@ public class Board extends JPanel {
         requestFocusInWindow();
     }
 
-
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        for (int x = 0; x < board.length; x++) {
-            for (int y = 0; y < board[0].length; y++) {
-                if ((x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1)) {
-                    g.setColor(new Color(0, 0, 0));
-                    g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-                }
-                if (board[x][y] != null) {
-                    g.drawImage(board[x][y].image, x * pixelSize, y * pixelSize, pixelSize, pixelSize, this);
-                }
-
-
-            }
-        }
-    }
-
-
-    private void fill_board(boolean side_choose) {
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (j == 1) {
-                    Pawn p = new Pawn(!side_choose, true);
-                    board[i][j] = p;
-                }
-                if (j == 6) {
-                    Pawn p = new Pawn(side_choose, false);
-                    board[i][j] = p;
-                }
-            }
-        }
-
-        Tower t = new Tower(!side_choose);
-        board[0][0]= t;
-        board[7][0]= t;
-        Tower bt = new Tower(side_choose);
-        board[0][7]= bt;
-        board[7][7]= bt;
-
-        Horse h = new Horse(!side_choose);
-        board[1][0]= h;
-        board[6][0]= h;
-        Horse bh = new Horse(side_choose);
-        board[1][7]= bh;
-        board[6][7]= bh;
-
-        Bishop b = new Bishop(!side_choose);
-        board[2][0]= b;
-        board[5][0]= b;
-        Bishop bb = new Bishop(side_choose);
-        board[2][7]= bb;
-        board[5][7]= bb;
-
-        Queen q = new Queen(!side_choose);
-        Queen bq = new Queen(side_choose);
-
-        King k = new King(!side_choose);
-        King bk = new King(side_choose);
-        if(!side_choose){
-            board[4][0] = k;
-            board[3][7] = bk;
-            board[3][0]=q;
-            board[4][7]=bq;
-        }
-        else
-        {
-            board[3][0] = k;
-            board[4][7] = bk;
-            board[4][0] = q;
-            board[3][7] = bq;
-        }
-    }
-
     public Point pick_figure(int posx, int posy) {
 
         if (board[posx][posy] != null && firstTurn == board[posx][posy].side) {
-            firstTurn = !firstTurn;
             pick = !pick;
             return new Point(posx, posy);
 
-        } else {
+        }
+        else {
             System.out.println("błąd wyboru figury");
             return new Point(-1, -1);
         }
@@ -135,7 +60,13 @@ public class Board extends JPanel {
             board[nposx][nposy] = board[posx][posy];
             board[posx][posy] = null;
             pick = !pick;
-        } else {
+            firstTurn = !firstTurn;
+        } else if(board[nposx][nposy] != null && board[nposx][nposy].side==board[posx][posy].side)
+        {
+            System.out.println("anulowano wybór figury wybierz kolejna");
+            coordinates = pick_figure(nposx, nposy);
+        }
+        else {
             System.out.println("zly ruch");
         }
 
@@ -267,5 +198,79 @@ public class Board extends JPanel {
         }
         else
             return false;
+    }
+
+    private void fill_board(boolean side_choose) {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (j == 1) {
+                    Pawn p = new Pawn(!side_choose, true);
+                    board[i][j] = p;
+                }
+                if (j == 6) {
+                    Pawn p = new Pawn(side_choose, false);
+                    board[i][j] = p;
+                }
+            }
+        }
+
+        Tower t = new Tower(!side_choose);
+        board[0][0]= t;
+        board[7][0]= t;
+        Tower bt = new Tower(side_choose);
+        board[0][7]= bt;
+        board[7][7]= bt;
+
+        Horse h = new Horse(!side_choose);
+        board[1][0]= h;
+        board[6][0]= h;
+        Horse bh = new Horse(side_choose);
+        board[1][7]= bh;
+        board[6][7]= bh;
+
+        Bishop b = new Bishop(!side_choose);
+        board[2][0]= b;
+        board[5][0]= b;
+        Bishop bb = new Bishop(side_choose);
+        board[2][7]= bb;
+        board[5][7]= bb;
+
+        Queen q = new Queen(!side_choose);
+        Queen bq = new Queen(side_choose);
+
+        King k = new King(!side_choose);
+        King bk = new King(side_choose);
+        if(!side_choose){
+            board[4][0] = k;
+            board[3][7] = bk;
+            board[3][0]=q;
+            board[4][7]=bq;
+        }
+        else
+        {
+            board[3][0] = k;
+            board[4][7] = bk;
+            board[4][0] = q;
+            board[3][7] = bq;
+        }
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[0].length; y++) {
+                if ((x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1)) {
+                    g.setColor(new Color(0, 0, 0));
+                    g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                }
+                if (board[x][y] != null) {
+                    g.drawImage(board[x][y].image, x * pixelSize, y * pixelSize, pixelSize, pixelSize, this);
+                }
+
+
+            }
+        }
     }
 }
