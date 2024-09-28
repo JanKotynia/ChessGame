@@ -10,7 +10,6 @@ public class Board extends JPanel {
     private boolean firstTurn = true;
     private boolean pick = false;
     private Point coordinates;
-    //private boolean castling = false;
 
     public Board(boolean side_choose) {
         int size = 800 / pixelSize;
@@ -86,29 +85,53 @@ public class Board extends JPanel {
     }
 
 
-
-
     public boolean pawnRange(int x, int y, int nx, int ny)
     {
-        if (board[x][y].startPosition) {
-            if (y - ny == -1 && x == nx) {
-                return board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side);
-            } else {
-                return false;
+        if(y == 1 || y == 6)
+        {
+            if (board[x][y].startPosition) {
+                if (y - ny == -1 && x == nx ) {
+                    return pawnDefaultRange(x,y,nx,ny);
+                }
+                else if(y - ny == -2 && x == nx )
+                {
+                 return board[x][y+1] == null &&  board[x][ny] == null;
+                }
+                else
+                    return false;
             }
-            //-1
+            else {
+                if (y - ny == 1 && x == nx ) {
+                    return pawnDefaultRange(x,y,nx,ny);
+                }
+                else if(y - ny == 2 && x == nx )
+                {
+                    return board[x][y-1] == null &&  board[x][ny] == null;
+                }
+                else
+                    return false;
+            }
+
         }
         else
-        {
-            if (y - ny == 1 && x == nx) {
-                {
-                    return board[nx][ny] == null || board[nx][ny] != null && (board[nx][ny].side != board[x][y].side);
-                }
+            return pawnDefaultRange(x,y,nx,ny);
+    }
+
+
+    public boolean pawnDefaultRange(int x, int y, int nx, int ny)
+    {
+        if (board[x][y].startPosition) {
+            if (y - ny == -1 && x == nx ) {
+                return board[nx][ny] == null;
             }
-            else
-            {
-                return false;
+            else return board[nx][ny] != null && board[nx][ny].side != board[x][y].side && (Math.abs(x - nx) == 1 && ny - y == 1);
+            //-1
+        }
+        else {
+            if (y - ny == 1 && x == nx ) {
+                return board[nx][ny] == null;
             }
+            else return board[nx][ny] != null && board[nx][ny].side != board[x][y].side && (Math.abs(x - nx) == 1 && ny - y == -1);
         }
     }
 
@@ -116,6 +139,12 @@ public class Board extends JPanel {
     public boolean towerRange(int x, int y, int nx, int ny)
     {
         int step;
+
+        if(board[nx][ny].FigureType=='k'&&board[nx][ny].side==board[x][y].side)
+        {
+            return castling(x,y,nx,ny);
+        }
+
         if(x != nx && y != ny) {
             return false;
         }
@@ -146,6 +175,13 @@ public class Board extends JPanel {
         return false;
     }
 
+
+    public boolean castling(int x, int y, int nx, int ny)
+    {
+        return true;
+    }
+
+
     public boolean horseRange(int x, int y, int nx, int ny)
     {
         if ((Math.abs(x - nx) == 2 && Math.abs(y - ny) == 1) || (Math.abs(x - nx) == 1 && Math.abs(y - ny) == 2)){
@@ -154,6 +190,7 @@ public class Board extends JPanel {
         else
             return false;
     }
+
 
     public boolean bishopRange(int x, int y, int nx, int ny)
     {
@@ -179,10 +216,12 @@ public class Board extends JPanel {
 
     }
 
+
     public boolean queenRange(int x, int y, int nx, int ny)
     {
         return (towerRange(x,y,nx,ny) || bishopRange(x,y,nx,ny));
     }
+
 
     public boolean kingRange(int x, int y, int nx, int ny)
     {
@@ -192,6 +231,7 @@ public class Board extends JPanel {
         else
             return false;
     }
+
 
     private void fill_board(boolean side_choose) {
 

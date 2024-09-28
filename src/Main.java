@@ -8,8 +8,5 @@ public class Main {
         frame.add(new ChoosingStage());
         frame.pack();
         frame.setVisible(true);
-
-
-
     }
 }
