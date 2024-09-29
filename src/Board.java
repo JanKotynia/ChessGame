@@ -140,11 +140,6 @@ public class Board extends JPanel {
     {
         int step;
 
-        if(board[nx][ny].FigureType=='k'&&board[nx][ny].side==board[x][y].side)
-        {
-            return castling(x,y,nx,ny);
-        }
-
         if(x != nx && y != ny) {
             return false;
         }
@@ -173,12 +168,6 @@ public class Board extends JPanel {
             return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
         }
         return false;
-    }
-
-
-    public boolean castling(int x, int y, int nx, int ny)
-    {
-        return true;
     }
 
 
@@ -225,8 +214,40 @@ public class Board extends JPanel {
 
     public boolean kingRange(int x, int y, int nx, int ny)
     {
-        if (Math.abs(x - nx) <= 1 && Math.abs(y - ny) <= 1){
-            return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
+        if(castling(x,y,nx,ny))
+            return true;
+        else
+            {
+                if (Math.abs(x - nx) <= 1 && Math.abs(y - ny) <= 1) {
+                    return board[nx][ny] == null || (board[nx][ny] != null && (board[nx][ny].side != board[x][y].side));
+                } else
+                    return false;
+            }
+    }
+
+    public boolean castling(int x, int y, int nx, int ny)
+    {
+        if(nx == 2 && y==ny && (y == 0 || y == 7) && x==4)
+        {
+            for(int i =1;i<4;i++) {
+                if (board[i][y] != null)
+                    return false;
+            }
+            System.out.println("cast");
+            board[3][y]=board[0][y];
+            board[0][y]=null;
+            return true;
+        }
+        else if(nx == 6 && y==ny && (y == 0 || y == 7) && x==4)
+        {
+            for(int i =5;i<7;i++) {
+                if (board[i][y] != null)
+                    return false;
+            }
+            System.out.println("cast");
+            board[5][y]=board[7][y];
+            board[7][y]=null;
+            return true;
         }
         else
             return false;
@@ -274,19 +295,10 @@ public class Board extends JPanel {
 
         King k = new King(!side_choose);
         King bk = new King(side_choose);
-        if(!side_choose){
-            board[4][0] = k;
-            board[3][7] = bk;
-            board[3][0]=q;
-            board[4][7]=bq;
-        }
-        else
-        {
-            board[3][0] = k;
-            board[4][7] = bk;
-            board[4][0] = q;
-            board[3][7] = bq;
-        }
+        board[4][0] = k;
+        board[4][7] = bk;
+        board[3][0]=q;
+        board[3][7]=bq;
     }
 
     @Override
